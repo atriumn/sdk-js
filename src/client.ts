@@ -9,11 +9,7 @@ import {
   Resource,
   ResourceContent,
   InitializeParams,
-  InitializeResult,
-  TraitAnalysis,
-  JobAnalysis,
-  Evidence,
-  Trait
+  InitializeResult
 } from './types';
 
 export class AtriumClient {
@@ -157,53 +153,6 @@ export class AtriumClient {
     return response.result.resources || [];
   }
 
-  async extractTraits(documentText: string): Promise<TraitAnalysis> {
-    const result = await this.executeTask('extract_traits', { 
-      document_text: documentText 
-    });
-    
-    if (result.isError) {
-      throw new Error('Failed to extract traits');
-    }
-    
-    return result.content[0]?.text ? JSON.parse(result.content[0].text) as TraitAnalysis : result as unknown as TraitAnalysis;
-  }
-
-  async analyzeJob(jobDescription: string): Promise<JobAnalysis> {
-    const result = await this.executeTask('analyze_job', { 
-      job_description: jobDescription 
-    });
-    
-    if (result.isError) {
-      throw new Error('Failed to analyze job');
-    }
-    
-    return result.content[0]?.text ? JSON.parse(result.content[0].text) as JobAnalysis : result as unknown as JobAnalysis;
-  }
-
-  async getEvidence(): Promise<Evidence[]> {
-    const resources = await this.listResources();
-    const evidenceResources = resources.filter(r => r.uri.includes('/evidence/'));
-    
-    const evidencePromises = evidenceResources.map(async (resource) => {
-      const content = await this.readResource(resource.uri);
-      return JSON.parse(content.text || '{}') as Evidence;
-    });
-
-    return Promise.all(evidencePromises);
-  }
-
-  async getTraits(): Promise<Trait[]> {
-    const resources = await this.listResources();
-    const traitResources = resources.filter(r => r.uri.includes('/traits/'));
-    
-    const traitPromises = traitResources.map(async (resource) => {
-      const content = await this.readResource(resource.uri);
-      return JSON.parse(content.text || '{}') as Trait;
-    });
-
-    return Promise.all(traitPromises);
-  }
 
   private async initialize(): Promise<void> {
     if (this.isInitialized) {

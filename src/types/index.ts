@@ -1,5 +1,4 @@
 export * from './mcp-types';
-export * from './idynic-types';
 
 export interface AtriumClientConfig {
   apiKey: string;

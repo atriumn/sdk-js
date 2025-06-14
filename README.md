@@ -1,6 +1,6 @@
 # @atriumn/sdk-js
 
-JavaScript SDK for Universal MCP - enables web apps to communicate with the Universal MCP Server using the MCP protocol.
+JavaScript SDK for Model Context Protocol (MCP) - enables web apps to communicate with MCP servers using the MCP protocol.
 
 ## Installation
 
@@ -15,23 +15,31 @@ import { AtriumClient } from '@atriumn/sdk-js';
 
 const client = new AtriumClient({
     apiKey: 'your-api-key',
-    endpoint: 'wss://mcp.atriumn.com',
+    endpoint: 'wss://your-mcp-server.com',
     clientType: 'web'
 });
 
-// Connect to the server
+// Connect to the MCP server
 await client.connect();
 
-// Extract traits from text
-const analysis = await client.extractTraits('Job candidate description here...');
-console.log(analysis.traits);
+// List available tools
+const tools = await client.listTools();
+console.log('Available tools:', tools);
 
-// Analyze a job description
-const jobAnalysis = await client.analyzeJob('Software engineer job posting...');
-console.log(jobAnalysis.requiredTraits);
+// Execute a tool
+const result = await client.executeTask('your_tool_name', { 
+    param1: 'value1',
+    param2: 'value2'
+});
+console.log('Tool result:', result);
 
-// Execute custom tools
-const result = await client.executeTask('custom_tool', { param: 'value' });
+// List available resources
+const resources = await client.listResources();
+console.log('Available resources:', resources);
+
+// Read a resource
+const content = await client.readResource('resource://example');
+console.log('Resource content:', content);
 
 // Disconnect when done
 await client.disconnect();
@@ -55,12 +63,6 @@ await client.disconnect();
 - Read resources from the MCP server
 - List available resources
 - Efficient resource management
-
-### Idynic Integration
-- `extractTraits()` - Extract personality traits from text
-- `analyzeJob()` - Analyze job descriptions for requirements
-- `getEvidence()` - Retrieve supporting evidence
-- `getTraits()` - Get available trait definitions
 
 ### Authentication
 - JWT token management
@@ -93,12 +95,6 @@ new AtriumClient(config: AtriumClientConfig)
 - `listResources(): Promise<Resource[]>` - List available resources
 - `readResource(uri: string): Promise<ResourceContent>` - Read a resource
 
-##### Idynic Convenience Methods
-- `extractTraits(text: string): Promise<TraitAnalysis>` - Extract traits from text
-- `analyzeJob(description: string): Promise<JobAnalysis>` - Analyze job description
-- `getEvidence(): Promise<Evidence[]>` - Get all evidence
-- `getTraits(): Promise<Trait[]>` - Get all traits
-
 ## Configuration
 
 ```typescript
@@ -118,7 +114,7 @@ interface AtriumClientConfig {
 import { AtriumClient } from '@atriumn/sdk-js';
 import { useState, useEffect } from 'react';
 
-function useAtriumClient(config) {
+function useMcpClient(config) {
   const [client] = useState(() => new AtriumClient(config));
   const [connected, setConnected] = useState(false);
 
@@ -130,38 +126,46 @@ function useAtriumClient(config) {
   return { client, connected };
 }
 
-function TraitExtractor() {
-  const { client, connected } = useAtriumClient({
+function ToolExecutor() {
+  const { client, connected } = useMcpClient({
     apiKey: process.env.REACT_APP_API_KEY,
-    endpoint: 'wss://mcp.atriumn.com'
+    endpoint: 'wss://your-mcp-server.com'
   });
 
-  const [text, setText] = useState('');
-  const [traits, setTraits] = useState(null);
+  const [tools, setTools] = useState([]);
+  const [result, setResult] = useState(null);
 
-  const extractTraits = async () => {
-    if (connected && text) {
-      const analysis = await client.extractTraits(text);
-      setTraits(analysis.traits);
+  useEffect(() => {
+    if (connected) {
+      client.listTools().then(setTools);
+    }
+  }, [client, connected]);
+
+  const executeTool = async (toolName, params) => {
+    if (connected) {
+      const toolResult = await client.executeTask(toolName, params);
+      setResult(toolResult);
     }
   };
 
   return (
     <div>
-      <textarea 
-        value={text} 
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Enter text to analyze..."
-      />
-      <button onClick={extractTraits} disabled={!connected}>
-        Extract Traits
-      </button>
-      {traits && (
-        <ul>
-          {traits.map(trait => (
-            <li key={trait.id}>{trait.name}: {trait.confidence}</li>
-          ))}
-        </ul>
+      <h3>Available Tools:</h3>
+      <ul>
+        {tools.map(tool => (
+          <li key={tool.name}>
+            <strong>{tool.name}</strong>: {tool.description}
+            <button onClick={() => executeTool(tool.name, {})}>
+              Execute
+            </button>
+          </li>
+        ))}
+      </ul>
+      {result && (
+        <div>
+          <h3>Result:</h3>
+          <pre>{JSON.stringify(result, null, 2)}</pre>
+        </div>
       )}
     </div>
   );
@@ -175,7 +179,7 @@ The SDK provides comprehensive error handling:
 ```javascript
 try {
   await client.connect();
-  const result = await client.executeTask('analyze_text', { text: 'example' });
+  const result = await client.executeTask('analyze_data', { data: 'example' });
 } catch (error) {
   if (error.message.includes('timeout')) {
     console.log('Request timed out, retrying...');
@@ -187,6 +191,33 @@ try {
   }
 }
 ```
+
+## TypeScript Support
+
+The SDK is written in TypeScript and provides full type definitions:
+
+```typescript
+import { AtriumClient, Tool, ToolResult, Resource } from '@atriumn/sdk-js';
+
+const client: AtriumClient = new AtriumClient({
+  apiKey: 'your-key',
+  endpoint: 'wss://server.com'
+});
+
+const tools: Tool[] = await client.listTools();
+const result: ToolResult = await client.executeTask('tool_name', {});
+const resources: Resource[] = await client.listResources();
+```
+
+## MCP Protocol Compliance
+
+This SDK implements the Model Context Protocol (MCP) specification:
+
+- **Protocol Version**: 2024-11-05
+- **Transport**: WebSocket
+- **Message Format**: JSON-RPC 2.0
+- **Authentication**: Bearer tokens
+- **Capabilities**: Tools, Resources, Prompts
 
 ## Browser Compatibility
 

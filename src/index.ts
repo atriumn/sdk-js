@@ -10,16 +10,14 @@ export type {
   ToolResult,
   Resource,
   ResourceContent,
-  TraitAnalysis,
-  JobAnalysis,
-  Evidence,
-  Trait,
-  PersonProfile,
-  WorkExperience,
-  MatchResult,
-  Skill,
-  ExperienceLevel,
-  SalaryRange
+  McpMessage,
+  McpRequest,
+  McpResponse,
+  McpError,
+  ServerCapabilities,
+  ClientCapabilities,
+  InitializeParams,
+  InitializeResult
 } from './types';
 
 export type {
