@@ -1,6 +1,6 @@
 {
   "name": "@atriumn/sdk-js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MCP client SDK for web and mobile apps in the Atriumn ecosystem",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

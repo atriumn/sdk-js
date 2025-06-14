@@ -40,14 +40,16 @@ export default [
       commonjs(),
       typescript({
         tsconfig: './tsconfig.json',
-        exclude: ['**/*.test.ts', '**/*.spec.ts']
+        exclude: ['**/*.test.ts', '**/*.spec.ts'],
+        declaration: true,
+        declarationDir: 'dist/types'
       })
     ],
     external: ['ws']
   },
   // Types build
   {
-    input: 'dist/types/index.d.ts',
+    input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
     plugins: [dts()]
   }
