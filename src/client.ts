@@ -32,14 +32,18 @@ export class AtriumClient {
       status: 'disconnected'
     };
 
+    // Prepare headers with automatic Authorization header from apiKey
+    const headers: Record<string, string> = { ...config.headers };
+    if (config.apiKey) {
+      headers['Authorization'] = `Bearer ${config.apiKey}`;
+    }
+
     this.transport = new WebSocketTransport({
       endpoint: this.config.endpoint,
       timeout: this.config.timeout,
       retryAttempts: this.config.retryAttempts,
       retryDelay: this.config.retryDelay,
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`
-      }
+      headers
     });
 
     this.setupTransportListeners();

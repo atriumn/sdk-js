@@ -99,14 +99,42 @@ new AtriumClient(config: AtriumClientConfig)
 
 ```typescript
 interface AtriumClientConfig {
-  apiKey: string;          // Your API key
+  apiKey?: string;         // Your API key (automatically adds Authorization header)
   endpoint: string;        // WebSocket endpoint URL
   clientType?: string;     // Client identifier (default: 'web')
   timeout?: number;        // Request timeout in ms (default: 30000)
   retryAttempts?: number;  // Max retry attempts (default: 3)
   retryDelay?: number;     // Base retry delay in ms (default: 1000)
+  headers?: Record<string, string>; // Custom headers for WebSocket connection
 }
 ```
+
+## Authentication & Headers
+
+### Automatic Authorization Header
+```javascript
+const client = new AtriumClient({
+  apiKey: 'your-jwt-token',
+  endpoint: 'wss://mcp.atriumn.com'
+});
+// Automatically adds: Authorization: Bearer your-jwt-token
+```
+
+### Custom Headers
+```javascript
+const client = new AtriumClient({
+  endpoint: 'wss://mcp.atriumn.com',
+  headers: {
+    'Authorization': 'Bearer custom-token',
+    'X-Client-Version': '1.0.0',
+    'X-Custom-Header': 'value'
+  }
+});
+```
+
+### Browser vs Node.js Behavior
+- **Node.js**: Headers are sent directly via the `ws` library
+- **Browser**: Authorization header is converted to query parameter (`?authorization=token`) due to WebSocket API limitations
 
 ## React Integration
 

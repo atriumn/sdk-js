@@ -34,7 +34,29 @@ export class WebSocketTransport implements Transport {
 
     return new Promise((resolve, reject) => {
       try {
-        this.ws = new WebSocket(this.config.endpoint);
+        // Check if we're in Node.js environment
+        if (typeof window === 'undefined' && typeof require !== 'undefined') {
+          // Node.js environment - use ws library with headers support
+          try {
+            const WebSocket = require('ws');
+            this.ws = new WebSocket(this.config.endpoint, {
+              headers: this.config.headers
+            });
+          } catch (error) {
+            // Fallback to standard WebSocket if ws package not available
+            this.ws = new (globalThis.WebSocket || require('ws'))(this.config.endpoint);
+          }
+        } else {
+          // Browser environment - WebSocket doesn't support headers directly
+          // For browsers, we'll pass auth via query parameters as a fallback
+          let endpoint = this.config.endpoint;
+          if (this.config.headers?.Authorization) {
+            const url = new URL(endpoint);
+            url.searchParams.set('authorization', this.config.headers.Authorization.replace('Bearer ', ''));
+            endpoint = url.toString();
+          }
+          this.ws = new WebSocket(endpoint);
+        }
 
         const onOpen = (): void => {
           this.reconnectAttempts = 0;
@@ -66,10 +88,14 @@ export class WebSocketTransport implements Transport {
           }
         };
 
-        this.ws.addEventListener('open', onOpen);
-        this.ws.addEventListener('error', onError);
-        this.ws.addEventListener('message', onMessage);
-        this.ws.addEventListener('close', onClose);
+        if (this.ws) {
+          this.ws.addEventListener('open', onOpen);
+          this.ws.addEventListener('error', onError);
+          this.ws.addEventListener('message', onMessage);
+          this.ws.addEventListener('close', onClose);
+        } else {
+          reject(new Error('Failed to create WebSocket instance'));
+        }
 
       } catch (error) {
         reject(new Error(`Failed to create WebSocket: ${error}`));
