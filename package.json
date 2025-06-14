@@ -1,6 +1,6 @@
 {
   "name": "@atriumn/sdk-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP client SDK for web and mobile apps in the Atriumn ecosystem",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -41,6 +41,9 @@
     "url": "https://github.com/atriumn/sdk-js/issues"
   },
   "homepage": "https://github.com/atriumn/sdk-js#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
