@@ -1,6 +1,6 @@
 # @atriumn/sdk-js
 
-JavaScript SDK for Model Context Protocol (MCP) - enables web apps to communicate with MCP servers using the MCP protocol.
+MCP client SDK for web and mobile apps in the Atriumn ecosystem. Enables seamless communication with MCP servers using the Model Context Protocol.
 
 ## Installation
 
@@ -15,7 +15,7 @@ import { AtriumClient } from '@atriumn/sdk-js';
 
 const client = new AtriumClient({
     apiKey: 'your-api-key',
-    endpoint: 'wss://your-mcp-server.com',
+    endpoint: 'wss://mcp.atriumn.com',
     clientType: 'web'
 });
 
@@ -114,7 +114,7 @@ interface AtriumClientConfig {
 import { AtriumClient } from '@atriumn/sdk-js';
 import { useState, useEffect } from 'react';
 
-function useMcpClient(config) {
+function useAtriumClient(config) {
   const [client] = useState(() => new AtriumClient(config));
   const [connected, setConnected] = useState(false);
 
@@ -127,9 +127,9 @@ function useMcpClient(config) {
 }
 
 function ToolExecutor() {
-  const { client, connected } = useMcpClient({
-    apiKey: process.env.REACT_APP_API_KEY,
-    endpoint: 'wss://your-mcp-server.com'
+  const { client, connected } = useAtriumClient({
+    apiKey: process.env.REACT_APP_ATRIUMN_API_KEY,
+    endpoint: 'wss://mcp.atriumn.com'
   });
 
   const [tools, setTools] = useState([]);
@@ -201,7 +201,7 @@ import { AtriumClient, Tool, ToolResult, Resource } from '@atriumn/sdk-js';
 
 const client: AtriumClient = new AtriumClient({
   apiKey: 'your-key',
-  endpoint: 'wss://server.com'
+  endpoint: 'wss://mcp.atriumn.com'
 });
 
 const tools: Tool[] = await client.listTools();

@@ -1,7 +1,7 @@
 {
   "name": "@atriumn/sdk-js",
   "version": "0.1.0",
-  "description": "JavaScript SDK for Model Context Protocol (MCP) - enables web apps to communicate with MCP servers",
+  "description": "MCP client SDK for web and mobile apps in the Atriumn ecosystem",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -20,6 +20,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
+    "atriumn",
     "mcp",
     "model-context-protocol",
     "websocket",
@@ -27,7 +28,8 @@
     "javascript",
     "typescript",
     "client",
-    "transport"
+    "web-sdk",
+    "mobile-sdk"
   ],
   "author": "Atriumn",
   "license": "MIT",
